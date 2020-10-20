@@ -1,0 +1,26 @@
++char **initBoard(int x)
+    - Return 2D array address
+    - Dimensions x by x
+
++solveBoard
+    - Return
+
+
+Q1 0x234
++----+----+
+| 67 |NULL|
++----+----+
+Q2 0x547
++----+----+
+| 86 |x234|
++----+----+
+Q3 0x783
++----+----+
+| 34 |x547|
++----+----+
+
+48
+
+Loop 1:
+    start at x = 1;
+    if free, then place queen, and 
