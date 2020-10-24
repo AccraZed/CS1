@@ -142,34 +142,99 @@ void recursiveCreateNode(node **head, int data)
     return;
 }
 
+node **merge(node **left, node **right, int range)
+{
+    int i = 0, index_right = 0, oob = range & 1 ? range / 2 + 1 : range / 2;
+    node *cur_left = *left, *cur_right = *right;
+
+    int *sorted = malloc(sizeof(int) * range);
+
+    // While the left and right are still in bound
+    while (cur_left != *right && index_right < oob)
+    {
+        if (cur_left->data < cur_right->data)
+        {
+            sorted[i++] = cur_left->data;
+            cur_left = cur_left->next;
+        }
+        else
+        {
+            sorted[i++] = cur_right->data;
+            cur_right = cur_right->next;
+            index_right++;
+        }
+    }
+
+    // Add the rest of the right if any
+    while (index_right < oob)
+    {
+        sorted[i++] = cur_right->data;
+        cur_right = cur_right->next;
+        index_right++;
+    }
+
+    // Add the rest of the left if any
+    while (cur_left != *right)
+    {
+        sorted[i++] = cur_left->data;
+        cur_left = cur_left->next;
+    }
+
+    // Write the array onto the linked list
+    cur_left = *left;
+    for (i = 0; i < range; i++)
+    {
+        cur_left->data = sorted[i];
+        cur_left = cur_left->next;
+    }
+
+    free(sorted);
+
+    return left;
+}
+
+node **mergeSort(node **left, int range)
+{
+    int i, mid = range / 2;
+    node *right = *left;
+
+    if (range <= 1)
+        return left;
+
+    for (i = 0; i < mid; i++)
+        right = right->next;
+
+    mergeSort(&right, range & 1 ? mid + 1 : mid);
+
+    mergeSort(left, mid);
+
+    merge(left, &right, range);
+
+    return left;
+}
 
 int main(void)
 {
-    node *head = createNode(0), *temp = head;
+    node *head = NULL, *cur;
     Queue *q = calloc(1, sizeof(Queue));
     int i, val = 0;
 
     srand(time(NULL));
 
-    for (i = 0; i < 3; i++)
+    int max = rand() % 50 + 1;
+
+    head = createNode(rand() % 1000 + 1);
+    cur = head;
+
+    for (i = 0; i < max; i++)
     {
-        enqueue(q, i * (10) + (rand() % 10 + 1));
+        cur->next = createNode(rand() % 1000 + 1);
+        cur = cur->next;
     }
 
-    printList(q->head);
-
-    dequeue(q);
-    dequeue(q);
-    dequeue(q);
-    dequeue(q);
-
-    printList(q->head);
-
-    enqueue(q, 15);
-    enqueue(q, 16);
-    enqueue(q, 17);
-
-    printList(q->head);
+    printList(head);
+    mergeSort(&head, max + 1);
+    printList(head);
 
     return 0;
 }
