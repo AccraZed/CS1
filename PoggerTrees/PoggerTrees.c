@@ -33,19 +33,110 @@ node *bstInsert(node *root, int data)
         root->left = bstInsert(root->left, data);
     else
         root->right = bstInsert(root->right, data);
-    
+
     return root;
+}
+
+// Best Case: O(1)
+// Worse Case: O(n)
+// Average Case: O(1)
+int treeDiff(node *a, node *b)
+{
+    // Base Case
+    if (a == NULL && b == NULL)
+        return 0;
+
+    if (a == NULL ^ b == NULL || a->data != b->data)
+        return 1;
+
+    return treeDiff(a->left, b->left) || treeDiff(a->right, b->right);
+}
+
+// Best Case: O(n)
+// Worst Case: O(n)
+// Average Case: O(n)
+int countOneChild(node *root)
+{
+    // Base Case
+    if (root == NULL)
+        return 0;
+
+    return ((root->left == NULL && root->right != NULL) ||
+            (root->right == NULL && root->left != NULL)) +
+           (countOneChild(root->left) + countOneChild(root->right));
+}
+
+// Best Case: O(1)
+// Worst Case: O(n)
+// Average Case: O(log n)
+node *largest(node *root)
+{
+    if (root->right == NULL)
+        return root;
+
+    return largest(root->right);
+}
+
+// Best Case: O(n)
+// Worst Case: O(n)
+// Average Case: O(n)
+int countNodes(node *root)
+{
+    if (root == NULL)
+        return 0;
+
+    return 1 + countNodes(root->left) + countNodes(root->right);
+}
+
+// Best Case: O(n)
+// Worst Case: O(n)
+// Average Case: O(n)
+int countLeafNodes(node *root)
+{
+    if (root == NULL)
+        return 0;
+
+    return (root->right == NULL && root->left == NULL) +
+           countLeafNodes(root->left) +
+           countLeafNodes(root->right);
+}
+
+// Best Case: O(n)
+// Worst Case: O(n)
+// Average Case: O(n)
+int countGreater(node *root, int key)
+{
+    if (root == NULL)
+        return 0;
+
+    return (root->data > key) +
+           countGreater(root->left, key) +
+           countGreater(root->right, key);
+}
+
+// Best Case: O(1)
+// Worse Case: O(n)
+// Average Case: O(log n)
+int BST_countGreater(node *root, int key)
+{
+    if (root == NULL)
+        return 0;
+
+    if (root->data <= key)
+        return BST_countGreater(root->right, key);
+    else
+        return 1 + BST_countGreater(root->right, key) + BST_countGreater(root->left, key);
 }
 
 void inorder_base(node *root)
 {
     if (root == NULL)
         return;
-    
+
     inorder_base(root->left);
     printf("%d ", root->data);
     inorder_base(root->right);
-    
+
     return;
 }
 
@@ -66,7 +157,7 @@ void preorder_base(node *root)
 {
     if (root == NULL)
         return;
-    
+
     printf("%d ", root->data);
     preorder_base(root->left);
     preorder_base(root->right);
@@ -91,7 +182,7 @@ void postorder_base(node *root)
 {
     if (root == NULL)
         return;
-    
+
     postorder_base(root->left);
     postorder_base(root->right);
     printf("%d ", root->data);
@@ -134,18 +225,10 @@ int main(void)
     for (i = 0; i < 10; i++)
     {
         num = rand() % 100 + 1;
-        printf("Inserting %d...\n", num);
         root = bstInsert(root, num);
     }
-
-    printf("inorder: ");
     inorder(root);
-    printf("preorder: ");
-    preorder(root);
-    printf("postorder: ");
-    postorder(root);
+    printf("%d\n", BST_countGreater(root, 80));
 
-    root = genderReveal(root);
-    inorder(root);
     return 0;
 }
